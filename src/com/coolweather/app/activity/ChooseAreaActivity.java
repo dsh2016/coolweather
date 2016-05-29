@@ -15,6 +15,7 @@ import com.coolweather.app.util.Utility;
 import android.R;
 import android.R.string;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ChooseAreaActivity extends Activity{
+	private  ProgressDialog progressDialog ;
 	ListView listview;
 	TextView textview;
 	List<String> datalist=new ArrayList<String>();
@@ -153,12 +155,19 @@ private void queryfromServer(final String object,final String type) {
 //关闭对话框
 private void closeprogressDialog() {
 	// TODO Auto-generated method stub
-	Log.d("FirstActivity", "关闭对话框进度条");
+	if (progressDialog!=null) {
+		progressDialog.dismiss();
+	}
 }
 //进展对话框
 private void showprogressDialog() {
 	// TODO Auto-generated method stub
-	Log.d("FirstActivity", "开启对话框进度条");
+	if (progressDialog==null) {
+		progressDialog=new ProgressDialog(this);
+		progressDialog.setMessage("正在加载******");
+		progressDialog.setCanceledOnTouchOutside(false);
+	}
+	progressDialog.show();
 }
 protected void querycount() {
 	// TODO Auto-generated method stub

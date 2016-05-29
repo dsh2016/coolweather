@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class CommonDao {
 public static final String DB_Name="cool_weather";
@@ -21,7 +22,14 @@ private SQLiteDatabase db;
 //创建数据库
 private CommonDao(Context context){
 	CoolWeatherOpenHelper dbhelper=new CoolWeatherOpenHelper(context, DB_Name,null, version);
+	Log.d("FirstActivity", "执行db");
 	db=dbhelper.getWritableDatabase();
+}
+public void delelteDatabase(){
+	db.delete("province", null, null);
+	db.delete("city", null, null);
+	db.delete("county", null, null);
+	
 }
 //获取commondao实例
 public synchronized static CommonDao getInstance(Context context){
@@ -37,23 +45,32 @@ public void saveProvince(Province province){
 		contentvalue.put("name", province.getName());
 		contentvalue.put("code", province.getCode());
 		db.insert("province", null, contentvalue);
+		Log.d("FirstActivity", province.getCode()+"code");
+		Log.d("FirstActivity", province.getName()+"name");
+		Log.d("FirstActivity", province.getId()+"id");
 	}
 }
+
 //获取全部省信息
 public List<Province> queryAllProvince(){
 	List<Province> li=new ArrayList<Province>();
 	Cursor consor=db.query("province", null, null, null, null, null, null);
-	while (consor.moveToFirst()) {
+	Log.d("FirstActivity", "到这开看");
+	int a=1;
+	if (consor.moveToFirst()) {
+		
 		do {
 			Province province=new Province();
 			province.setId(consor.getInt(consor.getColumnIndex("id")));
 			province.setName(consor.getString(consor.getColumnIndex("name")));
 			province.setCode(consor.getString(consor.getColumnIndex("code")));
 			li.add(province);
+			Log.d("FirstActivity", ""+a++);
 		} while (consor.moveToNext());
-		if (consor!=null) {
-			consor.close();
-		}
+		
+	}
+	if (consor!=null) {
+		consor.close();
 	}
 	return li;
 }
@@ -71,7 +88,7 @@ public void saveCity(City city){
 public List<City> queryAllCity(int province){
 	List<City> li=new ArrayList<City>();
 	Cursor cursor=db.query("city", null, "province_id=?", new String[]{String.valueOf(province)}, null, null, null);
-	while (cursor.moveToFirst()) {
+	if (cursor.moveToFirst()) {
 		do {
 			City city=new City();
 			city.setId(cursor.getInt(cursor.getColumnIndex("id")));
@@ -100,7 +117,7 @@ public void saveCounty(County county){
 public List<County> queyrAllCounty(int cityid){
 	List<County> li=new ArrayList<County>();
 	Cursor cursor=db.query("county", null, "City_id=?",new String[]{String.valueOf(cityid)}, null, null, null);
-	while (cursor.moveToFirst()) {
+	if (cursor.moveToFirst()) {
 		do {
 			County county=new County();
 			county.setCity_id(cursor.getInt(cursor.getColumnIndex("id")));
@@ -109,6 +126,9 @@ public List<County> queyrAllCounty(int cityid){
 			county.setCity_id(cursor.getInt(cursor.getColumnIndex("City_id")));
 			li.add(county);
 		} while (cursor.moveToNext());
+		if (cursor!=null) {
+			cursor.close();
+		}
 	}
 	return li;
 }
